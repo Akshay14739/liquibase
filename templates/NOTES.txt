@@ -1,0 +1,7 @@
+Liquibase migrations have been scheduled to run as a Kubernetes Job.
+
+To check the status of the migrations, run:
+  kubectl get jobs -n {{ .Release.Namespace }} {{ include "liquibase-migrations.fullname" . }}
+
+To view the migration logs:
+  kubectl logs -n {{ .Release.Namespace }} -l app.kubernetes.io/name={{ include "liquibase-migrations.name" . }}

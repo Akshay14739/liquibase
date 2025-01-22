@@ -1,0 +1,15 @@
+{{- if not .Values.image.useDefaultImage }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "liquibase-migrations.fullname" . }}-build
+  labels:
+    {{- include "liquibase-migrations.labels" . | nindent 4 }}
+data:
+  Dockerfile: |-
+{{ .Files.Get (printf "%s/%s" .Values.image.custom.buildContext .Values.image.custom.dockerfile) | indent 4 }}
+  docker-entrypoint.sh: |-
+{{ .Files.Get (printf "%s/docker-entrypoint.sh" .Values.image.custom.buildContext) | indent 4 }}
+  liquibase.docker.properties: |-
+{{ .Files.Get (printf "%s/liquibase.docker.properties" .Values.image.custom.buildContext) | indent 4 }}
+{{- end }}

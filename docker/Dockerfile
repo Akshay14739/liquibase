@@ -1,0 +1,59 @@
+FROM eclipse-temurin:17-jre-jammy
+
+# Create liquibase user
+RUN addgroup --gid 1001 liquibase && \
+    adduser --disabled-password --uid 1001 --ingroup liquibase liquibase && \
+    mkdir /liquibase && chown liquibase /liquibase
+
+# Install smaller JRE, if available and acceptable
+RUN apk add --no-cache openjdk17-jre-headless bash
+
+WORKDIR /liquibase
+
+ARG LIQUIBASE_VERSION=4.30.0
+ARG LB_SHA256=184ffd609518091da42d6cd75e883b4f6ff1763cce8883e95fc99f7f05ca262d
+
+# Download, verify, extract
+RUN set -x && \
+    apk add --no-cache --virtual .fetch-deps wget && \
+    wget -q -O liquibase-${LIQUIBASE_VERSION}.tar.gz "https://github.com/liquibase/liquibase/releases/download/v${LIQUIBASE_VERSION}/liquibase-${LIQUIBASE_VERSION}.tar.gz" && \
+    echo "$LB_SHA256 *liquibase-${LIQUIBASE_VERSION}.tar.gz" | sha256sum -c - && \
+    tar -xzf liquibase-${LIQUIBASE_VERSION}.tar.gz && \
+    rm liquibase-${LIQUIBASE_VERSION}.tar.gz && \
+    apk del --no-network .fetch-deps && \
+    ln -s /liquibase/liquibase /usr/local/bin/liquibase && \
+    ln -s /liquibase/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh && \
+    liquibase --version
+
+ARG LPM_VERSION=0.2.8
+ARG LPM_SHA256=ad46e7f0ca67e39ddbf1435c0bd2879be8a43340c7b627a2da45c07787574200
+ARG LPM_SHA256_ARM=2a2e46f2260f46ccd39f487dca161b4e04d97664160925c5e415bd9b54a23e1a
+
+# Download and Install lpm
+RUN mkdir /liquibase/bin && \
+    apk add --no-cache --virtual .fetch-deps wget unzip && \
+    arch="$(apk --print-arch)" && \
+    case "$arch" in \
+      x86_64)   DOWNLOAD_ARCH=""  ;; \
+      aarch64)  DOWNLOAD_ARCH="-arm64" && LPM_SHA256=$LPM_SHA256_ARM  ;; \
+      *) echo >&2 "error: unsupported architecture '$arch'" && exit 1 ;; \
+    esac && wget -q -O lpm-${LPM_VERSION}-linux${DOWNLOAD_ARCH}.zip "https://github.com/liquibase-package-manager/releases/download/v${LPM_VERSION}/lpm-${LPM_VERSION}-linux${DOWNLOAD_ARCH}.zip" && \
+    echo "$LPM_SHA256 *lpm-${LPM_VERSION}-linux${DOWNLOAD_ARCH}.zip" | sha256sum -c - && \
+    unzip lpm-${LPM_VERSION}-linux${DOWNLOAD_ARCH}.zip -d bin/ && \
+    rm lpm-${LPM_VERSION}-linux${DOWNLOAD_ARCH}.zip && \
+    apk del --no-network .fetch-deps && \
+    ln -s /liquibase/bin/lpm /usr/local/bin/lpm && \
+    lpm --version
+
+# Set LIQUIBASE_HOME environment variable
+ENV LIQUIBASE_HOME=/liquibase
+# Marker which indicates this is a Liquibase docker container
+ENV DOCKER_LIQUIBASE=true
+
+COPY docker-entrypoint.sh ./
+COPY liquibase.docker.properties ./
+
+USER liquibase:liquibase
+
+ENTRYPOINT ["/liquibase/docker-entrypoint.sh"]
+CMD ["--help"]

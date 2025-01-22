@@ -1,0 +1,9 @@
+apiVersion: v2
+name: liquibase-migrations
+description: A Helm chart for running Liquibase database migrations with Crossplane PostgreSQL
+version: 0.1.0
+appVersion: "4.23.0"
+type: application
+maintainers:
+  - name: Your Name
+    email: your.email@example.com

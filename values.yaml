@@ -1,0 +1,61 @@
+# Default values for liquibase-migrations
+image:
+  # Set to false to build custom image
+  useDefaultImage: false
+  # Default Liquibase image settings (used if useDefaultImage is true)
+  repository: liquibase/liquibase
+  tag: 4.30.0
+  pullPolicy: IfNotPresent
+  # Custom image build settings (used if useDefaultImage is false)
+  custom:
+    repository: 346334011463.dkr.ecr.us-west-2.amazonaws.com/liquibase-custom
+    tag: 4.30.0
+    buildContext: docker
+    dockerfile: Dockerfile
+
+# Database connection configuration
+database:
+  # These will be populated from the crossplane-postgres parent chart
+  host: ""
+  port: 5432
+  name: ""
+  schema: public
+  username: ""
+  password: ""
+
+# Liquibase specific configuration
+liquibase:
+  changeLogFile: /liquibase/changelog/db.changelog-master.yaml
+  contexts: ""
+  labels: ""
+  defaultSchemaName: ""
+
+# Migration configuration
+migrations:
+  # Set to true to run migrations automatically on chart installation/upgrade
+  autoExecute: true
+  # Timeout for migration job
+  timeout: 300
+  # Number of retries before failing
+  backoffLimit: 3
+
+# Resource limits
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+# Security context
+securityContext:
+  runAsUser: 1001
+  runAsGroup: 1001
+  fsGroup: 1001
+
+# Volume configuration for changelog files
+volumes:
+  changelog:
+    configMap:
+      name: liquibase-changelog

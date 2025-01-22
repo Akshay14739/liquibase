@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "liquibase-migrations.fullname" . }}
+  labels:
+    {{- include "liquibase-migrations.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  backoffLimit: {{ .Values.migrations.backoffLimit }}
+  activeDeadlineSeconds: {{ .Values.migrations.timeout }}
+  template:
+    metadata:
+      labels:
+        {{- include "liquibase-migrations.selectorLabels" . | nindent 8 }}
+    spec:
+      restartPolicy: OnFailure
+      securityContext:
+        {{- toYaml .Values.securityContext | nindent 8 }}
+      containers:
+        - name: liquibase
+          {{- if .Values.image.useDefaultImage }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          {{- else }}
+          image: "{{ .Values.image.custom.repository }}:{{ .Values.image.custom.tag }}"
+          {{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: LIQUIBASE_URL
+              value: jdbc:postgresql://{{ .Values.database.host }}:{{ .Values.database.port }}/{{ .Values.database.name }}
+            - name: LIQUIBASE_USERNAME
+              value: {{ .Values.database.username }}
+            - name: LIQUIBASE_PASSWORD
+              value: {{ .Values.database.password }}
+          command:
+            - liquibase
+            - --defaultsFile=/liquibase/liquibase.docker.properties
+            - update
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: changelog
+              mountPath: /liquibase/changelog
+      volumes:
+        - name: changelog
+          configMap:
+            name: {{ include "liquibase-migrations.fullname" . }}-changelog
