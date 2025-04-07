@@ -8,9 +8,15 @@ jobs:
         steps:
         - name: Checkout Repo
           uses: actions/checkout@v4
-        - name: welcome message
-          run: echo "Welcome to GitHub Actions"
-        - name: Listing files
-          run: ls -la
-        - name: Reading Chart.yaml
-          run: cat Chart.yaml
+
+        - name: List & Read Files
+          run: |
+            echo "Welcome to GitHub Actions"
+            ls -la
+            cat Chart.yaml
+        - name: Generate ASCII code
+          run: cowsay -f dummy-dragon "Run run, I'm a fluffy deagon" >> dummy-dragon.txt
+        # - name: Listing files
+        #   run: ls -la
+        # - name: Reading Chart.yaml
+        #   run: cat Chart.yaml
