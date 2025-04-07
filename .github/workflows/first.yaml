@@ -17,7 +17,7 @@ jobs:
         - name: Generate ASCII code
           run: |
             sudo apt-get install cowsay -y
-            cowsay -f dummy-dragon "Run run, I'm a fluffy dragon" >> dummy-dragon.txt
+            cowsay -f dragon "Run run, I'm a fluffy dragon" >> dummy-dragon.txt
             ls
         # - name: Listing files
         #   run: ls -la
