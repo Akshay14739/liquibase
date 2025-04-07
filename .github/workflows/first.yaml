@@ -13,13 +13,16 @@ jobs:
           run: |
             echo "Welcome to GitHub Actions"
             ls -la
-            cat Chart.yaml
-        - name: Generate ASCII code
-          run: |
-            sudo apt-get install cowsay -y
-            cowsay -f dragon "Run run, I'm a fluffy dragon" >> dummy-dragon.txt
-            ls
+          
         # - name: Listing files
         #   run: ls -la
         # - name: Reading Chart.yaml
         #   run: cat Chart.yaml
+    second_job: 
+      runs-on: ubuntu-latest
+      steps:
+        - name: dummy second job
+          run: |
+            sudo apt-get install cowsay -y
+            cowsay -f dragon "Run run, I'm a fluffy dragon" >> dummy-dragon.txt
+            ls
