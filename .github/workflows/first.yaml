@@ -18,8 +18,6 @@ jobs:
           run: |
             sudo apt-get install cowsay -y
             cowsay -f dummy-dragon "Run run, I'm a fluffy dragon" >> dummy-dragon.txt
-            grep -i "dragon" dummy-dragon.txt
-            cat dummy-dragon.txt
             ls
         # - name: Listing files
         #   run: ls -la
