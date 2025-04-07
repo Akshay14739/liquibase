@@ -12,4 +12,6 @@ jobs:
           - name: cowsay execution
             run: |
               cowsay -f dragon "Run run, I'm a fluffy dragon" >> dummy-dragon.txt
+              grep -i "dragon" dummy-dragon.txt
+              cat dummy-dragon
               ls
