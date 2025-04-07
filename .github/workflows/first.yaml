@@ -18,11 +18,4 @@ jobs:
         #   run: ls -la
         # - name: Reading Chart.yaml
         #   run: cat Chart.yaml
-    second_job: 
-      runs-on: ubuntu-latest
-      steps:
-        - name: dummy second job
-          run: |
-            sudo apt-get install cowsay -y
-            cowsay -f dragon "Run run, I'm a fluffy dragon" >> dummy-dragon.txt
-            ls
+    

@@ -1,4 +1,4 @@
-name: ASCII-Cowsay execution
+name: Third-workflow-shell-script-execution
 
 on: push
 
