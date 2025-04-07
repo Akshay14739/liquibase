@@ -1,0 +1,15 @@
+name: ASCII-Cowsay execution
+
+on: push
+
+jobs:
+    cowsay_installation:
+        runs-on: ubuntu-latest
+        steps:
+          - name: cowsay command installation
+            run: sudo apt-get install cowsay -y
+
+          - name: cowsay execution
+            run: |
+              cowsay -f dragon "Run run, I'm a fluffy dragon" >> dummy-dragon.txt
+              ls
