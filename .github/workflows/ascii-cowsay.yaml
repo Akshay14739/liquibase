@@ -9,11 +9,7 @@ jobs:
           - name: Checkout Repo
             uses: actions/checkout@v4
 
-          - name: cowsay command installation
-            run: sudo apt-get install cowsay -y
-
-          - name: cowsay execution
+          - name: Executing Shell script
             run: |
-              cowsay -f dragon "Run run, I'm a fluffy dragon" >> dummy-dragon.txt
-              grep -i "dragon" dummy-dragon.txt
-              ls
+              sudo chmod +x shell.sh            
+              ./shell.sh
