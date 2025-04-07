@@ -10,5 +10,3 @@ jobs:
           run: echo "Welcome to GitHub Actions"
         - name: Listing files
           run: ls -la
-        - name: Reading a file
-          run: cat Chart.yaml
